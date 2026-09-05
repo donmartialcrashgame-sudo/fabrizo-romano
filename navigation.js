@@ -4,7 +4,7 @@ const pages=[['index.html','Home'],['transfers.html','Transfers'],['news.html','
 function mount(){
   let host=document.querySelector('[data-global-nav]');
   if(!host){
-    const old=document.querySelector('.header,.site-header');
+    const old=document.querySelector('.header,.site-header,.site-nav');
     if(old){host=document.createElement('header');old.replaceWith(host)}else{host=document.createElement('header');document.body.prepend(host)}
   }
   host.className='site-nav';
