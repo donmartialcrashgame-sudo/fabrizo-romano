@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Artist Details — Movie Centre</title>
+<link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="movies.css"><link rel="stylesheet" href="artist-detail.css">
+</head>
+<body>
+<header class="site-header"><div class="container nav-wrap"><a class="brand" href="index.html">FABRIZIO ROMANO</a><button class="menu-btn" aria-label="Open menu">☰</button><nav class="nav-links"><a href="index.html">Home</a><a href="news.html">News</a><a href="transfers.html">Transfers</a><a href="videos.html">Videos</a><a href="movies.html">Movies</a></nav></div></header>
+<main class="artist-page"><div id="artistDetail" class="container"><div class="artist-loading">Loading artist details…</div></div></main>
+<footer class="artist-footer"><div class="container">Movie & Entertainment Centre · Powered by TMDB</div></footer>
+<script src="movies.js"></script>
+<script>
+const ARTIST_API='https://fabrizio-romanio-backend.onrender.com';
+const escA=v=>String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
+async function loadArtist(){const root=document.querySelector('#artistDetail'),id=new URLSearchParams(location.search).get('id');if(!id){root.innerHTML='<div class="artist-loading">No artist selected.</div>';return}try{const r=await fetch(ARTIST_API+'/api/tmdb-people/'+encodeURIComponent(id),{headers:{Accept:'application/json'}});if(!r.ok)throw new Error('API '+r.status);const d=await r.json();if(d.error)throw new Error(d.message||d.error);document.title=(d.name||'Artist')+' — Movie Centre';const years=d.birthday?d.birthday.slice(0,4)+(d.deathday?' — '+d.deathday.slice(0,4):''):'';root.innerHTML=`<a class="movie-back" href="javascript:history.back()">← Back</a><section class="artist-hero"><div class="artist-photo">${d.profile_url?`<img src="${escA(d.profile_url)}" alt="${escA(d.name)}">`:''}</div><div class="artist-copy"><span class="eyebrow">TMDB ARTIST PROFILE</span><h1>${escA(d.name||'Unknown Artist')}</h1><p class="artist-role">${escA(d.known_for_department||'Artist')}${years?' · '+escA(years):''}</p>${d.place_of_birth?`<p class="artist-fact">📍 ${escA(d.place_of_birth)}</p>`:''}<p class="artist-bio">${escA(d.biography||'No biography is available for this artist yet.')}</p></div></section><section class="artist-section"><h2>Movies</h2><div class="artist-movies">${(d.credits||[]).map(m=>`<a class="artist-movie" href="movie-detail.html?id=${encodeURIComponent(m.id)}"><div class="artist-poster">${m.poster_url?`<img src="${escA(m.poster_url)}" alt="${escA(m.title)}" loading="lazy">`:'<span>No poster</span>'}</div><strong>${escA(m.title||'Untitled')}</strong><small>${escA(m.release_date?.slice(0,4)||'—')}${m.character?' · '+escA(m.character):''}</small></a>`).join('')||'<p>No movie credits found.</p>'}</div></section><p class="artist-attribution">Artist information, images and filmography are supplied by TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB.</p>`}catch(e){console.warn(e);root.innerHTML='<div class="artist-loading"><strong>Artist details are unavailable right now.</strong><br>Please try again in a moment.</div>'}}
+loadArtist();
+</script>
+</body></html>
